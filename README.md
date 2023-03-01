@@ -11,7 +11,7 @@ time period from 2200 to 0600 as shown in the video above.
 ## Changelog & Future Updates
 * Fixed Segmentation Faults.
 * Fixed an issue where certain personnel received no breaks.
-* Added the ability for duty types & duty total to be determined by the user.
+* Added the ability for duty types & total hours of this respective duty to be determined by the user.
 * Plans to add the respective time in the schedule table.
 * Plans to output an image instead of printing a table into the terminal.
 
