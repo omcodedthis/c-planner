@@ -1,5 +1,5 @@
 # c-planner
-This program takes in the number of people and the names of each person from the user through the terminal. The program then takes these parameters from the user to generate a schedule table where the columns are the current duty for each hour for a 24-hour day starting from 8pm the previous day and the rows are the person's name. 
+This program takes in input such as total duties & the number of people from the user through the terminal to plan a schedule. The program then takes these parameters from the user to generate a table where the columns are the current duty for each hour for a 24-hour day starting from 8pm the previous day and the rows are the person's name. 
 
 ## Demo
 
