@@ -29,11 +29,16 @@ individual_schedule;
 char *all_duty_types[16];
 int all_duty_hours[16];
 
+// ANSI Color Codes
+#define W_UNDERLINE "\e[4;37m"  // Underlined White text
+#define GREEN "\e[0;32m"  // Regular text
+#define YELLOW "\e[1;33m"  // Bold
+#define RESET "\e[0m"
 
 // function prototyping
-void get_duties(void);
+int get_duties(void);
 void get_names(int strength, individual_schedule whole_schedule[]);
-void plan_schedule(int strength, individual_schedule whole_schedule[]);
+void plan_schedule(int strength, individual_schedule whole_schedule[], int total_duties);
 void print_schedule(int strength, individual_schedule whole_schedule[]);
 int random_int(int lower, int upper);
 
@@ -43,7 +48,7 @@ int random_int(int lower, int upper);
 int main(void)
 {
 
-    get_duties();
+    int total_duties = get_duties();
 
     int strength = get_int("Total People:");
 
@@ -51,7 +56,7 @@ int main(void)
 
     get_names(strength, whole_schedule);
 
-    plan_schedule(strength, whole_schedule);
+    plan_schedule(strength, whole_schedule, total_duties);
 
     print_schedule(strength, whole_schedule);
 
@@ -60,14 +65,19 @@ int main(void)
 
 // get_duties() asks the user for the total types of duties. The for-loop asks the user for the duty type and its respective
 // hours, repeating for the total of the types of duty.
-void get_duties(void)
+int get_duties(void)
 {
     int total_duties = get_int("How many duties?:");
+
     for (int i = 0; i < total_duties; i++)
     {
         all_duty_types[i] = get_string("Duty Name:");
         all_duty_hours[i] = get_int("Total hours for this duty:");
     }
+
+    printf("+--------------------------+\n");
+
+    return total_duties;
 }
 
 
@@ -83,7 +93,7 @@ void get_names(int strength, individual_schedule whole_schedule[])
 
 
 // plan_schedule() uses multiple for-loops to plan the schedule. i_length represents the total possible slots for each person.
-void plan_schedule(int strength, individual_schedule whole_schedule[])
+void plan_schedule(int strength, individual_schedule whole_schedule[], int total_duties)
 {
     int i_length = 16;
 
@@ -93,7 +103,7 @@ void plan_schedule(int strength, individual_schedule whole_schedule[])
         for(int b = 0; b < i_length; b++)
         {
             whole_schedule[a].all_duty_blocks[b].is_duty = false;
-            whole_schedule[a].all_duty_blocks[b].duty_type = "NONE";
+            whole_schedule[a].all_duty_blocks[b].duty_type = "BREAK";
         }
     }
 
@@ -104,7 +114,7 @@ void plan_schedule(int strength, individual_schedule whole_schedule[])
     for (int i = 0; i < 4; i++)
     {
         int random = random_int(0 , strength);
-        int random_duty = random_int(1 , 4);
+        int random_duty = random_int(0 , total_duties);
 
         whole_schedule[random].all_duty_blocks[0].duty_type = all_duty_types[random_duty];
         whole_schedule[random].all_duty_blocks[0].is_duty = true;
@@ -176,12 +186,21 @@ void plan_schedule(int strength, individual_schedule whole_schedule[])
                 }
 
             }
-
-
-            int random_duty = random_int(1 , 4);
+            int random_duty = random_int(0 , total_duties);
             whole_schedule[l].all_duty_blocks[p].duty_type = all_duty_types[random_duty];
             whole_schedule[l].all_duty_blocks[p].is_duty = true;
             all_duty_hours[random_duty]--;
+        }
+    }
+
+    for (int g = 0; g < strength; g++)
+    {
+        for(int f = 0; f < i_length; f++)
+        {
+            if (whole_schedule[g].all_duty_blocks[f].duty_type == NULL)
+            {
+                 whole_schedule[g].all_duty_blocks[f].duty_type = "BREAK";
+            }
         }
     }
 }
@@ -194,27 +213,54 @@ void print_schedule(int strength, individual_schedule whole_schedule[])
 {
     int i_length = 16;
 
+    // prints the row for the times for each slot
+    printf(W_UNDERLINE"%-10s"RESET, "   TIMINGS");
+    printf(W_UNDERLINE"  ||2000  |2100  ||____|____|____|____|____|____|0600  |0700  |0800  |0900  |1000  |1100  |1200  |1300  |1400  |1500  |1600  |1700  |1800  |1900  |"RESET);
+    printf("\n");
+
     for (int l = 0; l < strength; l++)
     {
         printf("%-8s", whole_schedule[l].name);
         printf("    ||");
         for (int p = 0; p < i_length; p++)
         {
+            // case for the slot that starts at 2100, signifying the last slot for the day
+            if (p == 1)
+            {
+                if (!(strcmp(whole_schedule[l].all_duty_blocks[p].duty_type, "BREAK")))
+                {
+                    printf(GREEN"%-6s"RESET, whole_schedule[l].all_duty_blocks[p].duty_type);
+                    printf("|");
+                }
 
-             if (p == 1)
-             {
-                printf("%-6s", whole_schedule[l].all_duty_blocks[p].duty_type);
+                else
+                {
+                    printf(YELLOW"%-6s"RESET, whole_schedule[l].all_duty_blocks[p].duty_type);
+                    printf("|");
+                }
+
                 printf("|____|____|____|____|____|____|");
                 continue;
-             }
-             printf("%-6s", whole_schedule[l].all_duty_blocks[p].duty_type);
-             printf("|____|");
+            }
+
+            // for all the other slots
+            if (!(strcmp(whole_schedule[l].all_duty_blocks[p].duty_type, "BREAK")))
+            {
+                printf(GREEN"%-6s"RESET, whole_schedule[l].all_duty_blocks[p].duty_type);
+                printf("|");
+            }
+
+            else
+            {
+                printf(YELLOW"%-6s"RESET, whole_schedule[l].all_duty_blocks[p].duty_type);
+                printf("|");
+            }
 
         }
-        printf("\n");
+    // "new line" added before moving onto the next row
+    printf("\n");
     }
 }
-
 
 
 // random_int() takes in 2 numbers, max & min values. It then returns a random integer between these two values.
