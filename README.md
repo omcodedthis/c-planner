@@ -16,5 +16,14 @@ time period from 2200 to 0600 as shown in the GIF above.
 * Added colored text to improve the distinction between duty slots.
 * Reduced the number of dependencies.
 
+## Getting Started
+* Download the program using the green "<> Code" button.
+
+* While in the folder "c-planner", use this command-line in the terminal to run it.
+
+  ```
+  ./c-planner
+  ```
+  
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 <sub>*Disclaimer: This is currently a work in progress. This repository will be updated when new features have been added or when bugs have been rectified. Only stable versions of the program will be pushed as an update to this repository.*<sub/>
